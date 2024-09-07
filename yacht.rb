@@ -1,40 +1,36 @@
 class Yacht
 
-  CATEGORY = {
-               'ones' => 1,
-               'twos' => 2,
-             'threes' => 3,
-              'fours' => 4,
-              'fives' => 5,
-              'sixes' => 6,
-         'full house' => :full_house,
-     'four of a kind' => :four_of_a_kind,
-    'little straight' => :little_straight,
-       'big straight' => :big_straight,
-             'choice' => :choice,
-              'yacht' => :yacht,
+  SCORE_CATEGORY = {
+      'ones' => 1,
+      'twos' => 2,
+    'threes' => 3,
+     'fours' => 4,
+     'fives' => 5,
+     'sixes' => 6,
   }
 
   private
 
-  private_constant :CATEGORY
+  private_constant :SCORE_CATEGORY
 
   def initialize(dice_rolls, category)
     @dice_rolls = dice_rolls
     @category = category
-    @numbers_rolled = dice_rolls.uniq
   end
 
-  def score_numeric_category
-    dice_rolls.select { |roll| roll == CATEGORY[category] }.sum
+  def numbers_rolled
+    dice_rolls.uniq
+  end
+
+  def quantity(number)
+    dice_rolls.count { |d| d == number }
   end
 
   def full_house
     return 0 unless numbers_rolled.size == 2
 
     numbers_rolled.each do |number|
-      quantity = dice_rolls.count { |d| d == number }
-      return dice_rolls.sum if quantity == 2
+      return dice_rolls.sum if quantity(number) == 2
     end
     0
   end
@@ -42,8 +38,7 @@ class Yacht
   def four_of_a_kind
     four_of_a_kind = 0
     numbers_rolled.each do |number|
-      quantity = dice_rolls.count { |d| d == number }
-      four_of_a_kind = number if quantity >= 4
+      four_of_a_kind = number if quantity(number) >= 4
     end
     four_of_a_kind * 4
   end
@@ -64,16 +59,20 @@ class Yacht
     dice_rolls.uniq.size == 1 ? 50 : 0
   end
 
+  def dice_number_category?
+    SCORE_CATEGORY[category].is_a? Integer
+  end
+
+  def score_numeric_category
+    dice_rolls.select { |roll| roll == SCORE_CATEGORY[category] }.sum
+  end
+
   public
 
-  attr_reader :dice_rolls, :category, :numbers_rolled
+  attr_reader :dice_rolls, :category
 
   def score
-    if CATEGORY[category].is_a? Integer
-      score_numeric_category
-    else
-      send(CATEGORY[category])
-    end
+    dice_number_category? and score_numeric_category or send(category.gsub(' ', '_'))
   end
 
 end

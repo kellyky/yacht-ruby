@@ -4,6 +4,7 @@ require_relative 'yacht'
 # Tests provided by Exercism. Inclusion in Repo is for context
 
 class YachtTest < Minitest::Test
+  def skip; end
   def test_yacht
     # skip
     score = Yacht.new([5, 5, 5, 5, 5], 'yacht').score
