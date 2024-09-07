@@ -17,9 +17,12 @@ class Yacht
 
   private
 
+  private_constant :CATEGORY
+
   def initialize(dice_rolls, category)
     @dice_rolls = dice_rolls
     @category = category
+    @numbers_rolled = dice_rolls.uniq
   end
 
   def score_numeric_category
@@ -27,40 +30,33 @@ class Yacht
   end
 
   def full_house
+    return 0 unless numbers_rolled.size == 2
 
+    numbers_rolled.each do |number|
+      quantity = dice_rolls.count { |d| d == number }
+      return dice_rolls.sum if quantity == 2
+    end
+    0
   end
 
   def four_of_a_kind
-    require 'pry-byebug'
-    binding.pry
-
-    numbers_rolled = dice_rolls.uniq
-
-    case numbers_rolled.size
-    when 1
-      4 * numbers_rolled.first
-    when 2
-      # check if either number is 4 or more dice
-      # 
-    else
-      0
+    four_of_a_kind = 0
+    numbers_rolled.each do |number|
+      quantity = dice_rolls.count { |d| d == number }
+      four_of_a_kind = number if quantity >= 4
     end
-
-    # determine which roll is 4 or more
-    #
-    
+    four_of_a_kind * 4
   end
 
   def little_straight
-
+    dice_rolls.sort == [1, 2, 3, 4, 5] ? 30 : 0
   end
 
   def big_straight
-
+    dice_rolls.sort == [2, 3, 4, 5, 6] ? 30 : 0
   end
 
   def choice
-    # TODO: do this work in the hash
     dice_rolls.sum
   end
 
@@ -70,7 +66,7 @@ class Yacht
 
   public
 
-  attr_reader :dice_rolls, :category
+  attr_reader :dice_rolls, :category, :numbers_rolled
 
   def score
     if CATEGORY[category].is_a? Integer
