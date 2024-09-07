@@ -27,12 +27,9 @@ class Yacht
   end
 
   def full_house
-    return 0 unless numbers_rolled.size == 2
-
-    numbers_rolled.each do |number|
-      return dice_rolls.sum if quantity(number) == 2
-    end
-    0
+    dice_count = {}
+    numbers_rolled.each { |number| dice_count[number] = quantity(number) }
+    dice_count.values.sort == [2, 3] ? dice_rolls.sum : 0
   end
 
   def four_of_a_kind
@@ -59,11 +56,11 @@ class Yacht
     dice_rolls.uniq.size == 1 ? 50 : 0
   end
 
-  def dice_number_category?
+  def numeric?
     SCORE_CATEGORY[category].is_a? Integer
   end
 
-  def score_numeric_category
+  def score_numeric
     dice_rolls.select { |roll| roll == SCORE_CATEGORY[category] }.sum
   end
 
@@ -72,7 +69,7 @@ class Yacht
   attr_reader :dice_rolls, :category
 
   def score
-    dice_number_category? and score_numeric_category or send(category.gsub(' ', '_'))
+    numeric? and score_numeric or send(category.gsub(' ', '_'))
   end
 
 end
